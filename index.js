@@ -9,31 +9,39 @@ imgur.setClientId('f9b9cfa7c0b0f67');
 app.use(express.urlencoded({ extended: true }));
 
 // Route to handle image uploading
-app.get('/imgur', (req, res) => {
+app.get('/imgur', async (req, res) => {
   const url = req.query.url ;
 
   if (!url) {
     return res.status(400).json({ error: 'Missing image URL' });
   }
 
-  // Log the URL for debugging purposes
-  console.log('Uploading image from URL:', url);
-
-  imgur.uploadImgur(url)
-    .then((result) => {
-      // Log the Imgur API response
-      console.log('Imgur API response:', result);
-      res.json(result);
-    })
-    .catch((error) => {
-      // Log the error for debugging purposes
-      console.error('Error uploading image to Imgur:', error);
+  try {
+    const result = await imgur.uploadImgur(url);
+    res.json(result);
+  } catch (error) {
+    if (error.response && error.response.status === 429) {
+      // Retry the request after a delay
+      setTimeout(() => {
+        // Retry the request
+        // You may want to implement exponential backoff here
+        // to prevent hitting the rate limit again immediately
+        imgur.uploadImgur(url)
+          .then((result) => {
+            res.json(result);
+          })
+          .catch((error) => {
+            res.status(500).json({ error: 'An error occurred while uploading the image' });
+          });
+      }, 5000); // Retry after 5 seconds
+    } else {
       res.status(500).json({ error: 'An error occurred while uploading the image' });
-    });
+    }
+  }
 });
 
 // Start the server
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
