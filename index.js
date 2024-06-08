@@ -3,7 +3,7 @@ const imgur = require('imgur-module');
 
 const app = express();
 
-imgur.setClientId('e33995ffbe6c4c2');
+imgur.setClientId('f9b9cfa7c0b0f67');
 
 // Route to handle image uploading
 app.get('/imgur', (req, res) => {
