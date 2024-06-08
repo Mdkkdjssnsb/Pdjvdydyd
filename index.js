@@ -5,9 +5,12 @@ const app = express();
 
 imgur.setClientId('e33995ffbe6c4c2');
 
+// Middleware to parse JSON bodies
+app.use(express.json());
+
 // Route to handle image uploading
-app.get('/imgur', (req, res) => {
-  const url = req.query.url ;
+app.post('/imgur', (req, res) => {
+  const url = req.body.url;
 
   if (!url) {
     return res.status(400).json({ error: 'Missing image URL' });
