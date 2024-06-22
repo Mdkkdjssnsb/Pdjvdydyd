@@ -16,7 +16,7 @@ app.get('/imgur', (req, res) => {
     if (err) {
       res.status(500).send('Error: ' + err.message);
     } else {
-      res.send('imgur: ' + result.data.link);
+      res.send(result);
     }
   });
 });
