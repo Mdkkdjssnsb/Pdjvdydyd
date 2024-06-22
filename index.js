@@ -9,7 +9,7 @@ imgur.setClientId('e33995ffbe6c4c2');
 app.use(express.json());
 
 // Route to handle image uploading
-app.post('/imgur', (req, res) => {
+app.get('/imgur', (req, res) => {
   const url = req.body.url;
 
   if (!url) {
