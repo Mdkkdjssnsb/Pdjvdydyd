@@ -1,31 +1,26 @@
 const express = require('express');
-const imgur = require('imgur-module');
-
+const imgur = require('imgur-upload-api');
 const app = express();
 
-imgur.setClientId('e33995ffbe6c4c2');
+const myClientID = 'e33995ffbe6c4c2';
+imgur.setClientID(myClientID);
 
-// Middleware to parse JSON bodies
-app.use(express.json());
-
-// Route to handle image uploading
 app.get('/imgur', (req, res) => {
-  const url = req.query.url;
+  const u = req.query.url;
 
-  if (!url) {
-    return res.status(400).json({ error: 'Missing image URL' });
+  if (!u) {
+    return res.status(400).send('Image URL is required');
   }
 
-  imgur.uploadImgur(url)
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((error) => {
-      res.status(500).json({ error: 'An error occurred while uploading the image' });
-    });
+  imgur.upload(u, (err, result) => {
+    if (err) {
+      res.status(500).send('Error: ' + err.message);
+    } else {
+      res.send('imgur: ' + result.data.link);
+    }
+  });
 });
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
