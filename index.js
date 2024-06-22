@@ -10,7 +10,7 @@ app.use(express.json());
 
 // Route to handle image uploading
 app.get('/imgur', (req, res) => {
-  const url = req.body.url;
+  const url = req.query.url;
 
   if (!url) {
     return res.status(400).json({ error: 'Missing image URL' });
